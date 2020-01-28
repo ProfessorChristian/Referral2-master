@@ -1,0 +1,51 @@
+﻿@model PregnantViewModel
+
+<div class="modal fade" id="pregnant-form-modal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="title-form">BEmONC/ CEmONC REFERRAL FORM</div>
+            <div class="modal-body">
+                @await Html.PartialAsync("~/Views/Shared/_pregnantForm.cshtml", Model)
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default btn-flat fa-pull-left" data-dismiss="modal">
+                    <i class="fa fa-times"></i>
+                    &nbsp;Close
+                </button>
+                <div class="justify-content-end">
+                    <button class="btn btn-info" type="button" data-toggle="modal" data-target="#">
+                        <i class="fa fa-phone"></i>
+                        Call Request
+                    </button>
+                    <!-- RECOMMEND TO REDIRECT -->
+                    <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#">
+                        <i class="fa fa-line-chart"></i>
+                        Recommend to Redirect
+                    </button>
+                    <!-- ACCEPT -->
+                    <button class="btn btn-success" id="accept-btn" value="@Model.Code" type="button" data-toggle="modal" data-target="#accept-modal">
+                        <i class="fa fa-check"></i>
+                        Accept
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var acceptBtn = $('#accept-btn');
+
+    acceptBtn.on('click', function () {
+        console.log('yow');
+        var patientCode = this.value;
+        var url = "/Remarks/AcceptedRemark?code=" + patientCode;
+        console.log(url);
+        $("#accept_content").html("Loading..............");
+        $.get(url, function (result) {
+            $("#accept_content").html(result);
+        })
+    });
+
+</script>

@@ -1,0 +1,302 @@
+﻿@model PaginatedList<PatientsViewModel>
+
+@{
+    ViewData["Title"] = "Patient List";
+}
+
+
+<div class="content">
+    <div class="container">
+        <div class="row">
+            <!-- CARD DANGER -->
+            <div class="col-md-3">
+                <!-- SELECT DATE -->
+                <div class="card card-danger card-green">
+                    <!-- CARD DANGER HEADER -->
+                    <div class="card-header">
+                        <h3 class="card-title">Filter Patients</h3>
+                    </div>
+                    <!-- CARD DANGER BODY -->
+                    <form asp-action="Listpatients" method="post">
+                        <div class="card-body">
+                            <!-- SEARCH -->
+                            <div class="form-group">
+                                <input class="form-control form-control-sm" type="text" placeholder="Seach Keyword..." name="name" value="@ViewBag.CurrentFilter" autocomplete="off" required />
+                            </div>
+                            <!-- MUNICIPALITY -->
+                            <div class="form-group">
+                                <select class="form-control form-control-sm" asp-items="ViewBag.Muncities" id="muncityFilter" name="muncityId" required>
+                                    <option value="">Select City/Municipality...</option>
+                                </select>
+                            </div>
+                            <!-- BARANGAY -->
+                            <div class="form-group">
+                                <select class="form-control form-control-sm" id="barangay" asp-items="ViewBag.Barangays" name="barangayId" required>
+                                    <option value="">Select Barangay...</option>
+                                </select>
+                            </div>
+                            <!-- BUTTONS -->
+                            <div class="form-group">
+                                <!-- FILTER -->
+                                <button class="btn btn-block btn-sm bg-gradient-success" type="submit" value="Filter">
+                                    <i class="fa fa-search"></i>
+                                    &nbsp;Filter
+                                </button>
+                                <!-- ADD PATIENT -->
+                                <a class="btn btn-block btn-sm bg-gradient-warning" asp-controller="AddPatients" asp-action="Add">
+                                    <i class="fa fa-user-plus">
+                                        &nbsp;Add Patient
+                                    </i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <!-- PATIENT LIST -->
+                <div class="card card-outline">
+                    <!-- DAILY USERS HEADER -->
+                    <div class="card-header with-border">
+                        <h3>
+                            Patient List
+                        </h3>
+                        <small class="text-success">@DateTime.Now.ToString("MMMM dd, yyyy")</small>
+                    </div>
+                    <!-- DAILY USERS BODY -->
+                    <div class="card-body">
+                        <!-- TABLE START -->
+                        @if (Model.Count() > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover table-bordered">
+                                    <!-- TABLE HEADER -->
+                                    <thead>
+                                        <tr class="bg-gradient-gray">
+                                            <th>Name</th>
+                                            <th>Gender</th>
+                                            <th>Age/DOB</th>
+                                            <th>Barangay</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <!-- TABLE BODY -->
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            var dateOfBirth = item.DateofBirth.ToString("MMMM dd, yyyy");
+                                        <tr>
+                                            <td>@item.PatientName</td><!-- NAME -->
+                                            <td>@item.PatientSex</td><!-- GENDER -->
+                                            <td>
+                                                <!-- AGE/DOB -->
+                                                @item.PatientAge<br />
+                                                <small class="text-muted">@dateOfBirth</small>
+                                            </td>
+                                            <td>
+                                                <!-- BARANGAY -->
+                                                @item.Barangay<br />
+                                                <small class="text-muted">@item.Muncity</small>
+                                            </td>
+                                            <td>
+                                                @if (item.PatientSex.Equals("Female") && (item.PatientAge > 14 && item.PatientAge < 50))
+                                                {
+                                                    <!-- REFER -->
+                                                    <button type="button" id="refer-pregnant-btn" class="btn btn-primary btn-xs patientId" data-toggle="modal" data-target="#pregnant-refer-modal" data-patient_id="@item.PatientId">
+                                                        <i class="fa fa-stethoscope"></i>
+                                                        &nbsp;Refer
+                                                    </button>
+                                                    <!-- WALK IN -->
+                                                    <button type="button" id="refer-pregnant-btn" class="btn btn-warning btn-xs patientId" data-toggle="modal" data-target="#pregnant-walkin-modal" data-patient_id="@item.PatientId">
+                                                        <i class="fa fa-ambulance"></i>
+                                                        &nbsp;Walk-In
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <!-- REFER -->
+                                                    <button type="button" class="btn btn-primary btn-xs refer_modal patientId" data-toggle="modal" data-target="#refer_modal" data-patient_id="@item.PatientId">
+                                                        <i class="fa fa-stethoscope"></i>
+                                                        &nbsp;Refer
+                                                    </button>
+                                                    <!-- WALK IN -->
+                                                    <button type="button" class="btn btn-warning btn-xs walkin_modal patientId" data-toggle="modal" data-target="#walkin_modal" data-patient_id="@item.PatientId">
+                                                        <i class="fa fa-ambulance"></i>
+                                                        &nbsp;Walk-In
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <span class="text-warning">
+                                    <i class="fa fa-exclamation-triangle"></i> Patient not found!
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WALKIN CHOOSE MODAL -->
+<div class="modal fade" role="dialog" id="pregnant-walkin-modal">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h4>
+                    SELECT OPTION
+                </h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="preg-btn">
+                    <!-- NON-PREGNENT WALKIN -->
+                    <button class="btn btn-warning col-xs-7" type="button" data-backdrop="static" data-toggle="modal" data-target="#walkin_modal">
+                        <img src="~/assets/dist/img/female.png" width="100" />
+                        <br />
+                        Non-Pregnant
+                    </button>
+                    <!-- PREGNANT WALKIN -->
+                    <button class="btn btn-info col-xs-7" type="button" data-backdrop="static" data-target="#pregnant_walkin_modal" data-toggle="modal">
+                        <img src="~/assets/dist/img/pregnant.png" width="100" />
+                        <br />
+                        Pregnant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REFER CHOOSE MODAL -->
+<div class="modal fade" role="dialog" id="pregnant-refer-modal">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h4>
+                    SELECT OPTION
+                </h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="preg-btn">
+                    <!-- NON-PREGNANT REFER -->
+                    <button type="button" class="btn btn-warning col-xs-7" data-backdrop="static" data-toggle="modal" data-target="#refer_modal">
+                        <img src="~/assets/dist/img/female.png" width="100" />
+                        <br />
+                        Non-Pregnant
+                    </button>
+                    <!-- PREGNENT REFER -->
+                    <button type="button" class="btn btn-info col-xs-7" data-backdrop="static" data-toggle="modal" data-target="#pregnant_refer_modal">
+                        <img src="~/assets/dist/img/pregnant.png" width="100" />
+                        <br />
+                        Pregnant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- NORMAL REFER MODAL -->
+<div class="modal fade" id="refer_modal" tabindex="-1" role="dialog" aria-labelledby="addContactLabel" aria-hidden="true">
+    <div class="modal-dialog mw-100 w-50" role="document">
+        <div class="modal-content" id="normal-refer-content">
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- NORMAL WALKIN MODAL -->
+<div class="modal fade" id="walkin_modal" tabindex="-1" role="dialog" aria-labelledby="addContactLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="normal-walkin-content">
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- PREGNANT REFER MODAL -->
+<div class="modal fade" id="pregnant_refer_modal" tabindex="-1" role="dialog" aria-labelledby="addContactLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="pregnant-refer-content">
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- PREGNANT WALKIN MODAL -->
+<div class="modal fade" id="pregnant_walkin_modal" tabindex="-1" role="dialog" aria-labelledby="addContactLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="pregnant-walkin-content">
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var patientId;
+    var url;
+
+
+    $('.patientId').on('click', function () {
+        patientId = $(this).data('patient_id');
+    });
+
+    $('#refer_modal').on('show.bs.modal', function () {
+        url = '/AddPatients/Refer?id=' + patientId;
+        $.get(url).done(function (data) {
+            $('#normal-refer-content').empty();
+            $('#normal-refer-content').html(data);
+        });
+    });
+
+    $('#walkin_modal').on('show.bs.modal', function () {
+        url = '/AddPatients/Walkin?id=' + patientId;
+        console.log(url)
+        $.get(url).done(function (data) {
+            $('#normal-walkin-content').empty();
+            $('#normal-walkin-content').html(data);
+        });
+    });
+    $('#pregnant_refer_modal').on('show.bs.modal', function () {
+        url = '/AddPatients/PregnantRefer?id=' + patientId;
+        $.get(url).done(function (data) {
+            $('#pregnant-refer-content').empty();
+            $('#pregnant-refer-content').html(data);
+        });
+    });
+
+    $('#pregnant_walkin_modal').on('show.bs.modal', function () {
+        url = '/AddPatients/PregnantWalkin?id=' + patientId;
+        console.log(url)
+        $.get(url).done(function (data) {
+            $('#pregnant-walkin-content').empty();
+            $('#pregnant-walkin-content').html(data);
+        });
+    });
+
+    var currentModal = $('#refer_modal');
+    var currentContent = $('#normal-refer-content');
+
+    currentModal.on('click', 'button[data-save="modal"]', function (event) {
+        event.preventDefault();
+        var form = currentModal.find('form');
+        var actionUrl = form.attr('action');
+        console.log(actionUrl);
+        var dataToSend = form.serialize();
+        $.post(actionUrl, dataToSend).done(function (data) {
+            currentContent.empty();
+            currentContent.html(data);
+            //currentContent.find('.modal-body').replaceWith(newBody);
+            var validation = $('span.text-danger').text();
+            if (validation == '') {
+                //placeholderElement.find('.modal').modal('hide');
+                //location.reload();
+            }
+        });
+    });
+</script>

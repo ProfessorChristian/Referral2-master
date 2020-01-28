@@ -1,0 +1,73 @@
+﻿@model IEnumerable<OnlineAdminViewModel>
+@{
+    ViewData["Title"] = "OnlineUsers";
+    var date = DateTime.Parse(ViewBag.Date).ToString("MMMM d, yyyy");
+}
+
+
+<div class="col-md-12">
+    <div class="card card-success card-outline">
+        <div class="card-header">
+            <form class="fa-pull-right form-inline" asp-action="OnlineUsers" method="post">
+                <div class="form-actions no-color">
+                    <p>
+                        <input class="form-control form-control-sm" type="text" name="Date" value="@ViewBag.Date" />
+                        <button type="submit" value="Search" class="btn btn-sm btn-success">
+                            <i class="fa fa-calendar"></i>
+                            &nbsp;Change Date
+                        </button>
+                    </p>
+                </div>
+            </form>
+            <h3>
+                Online Users
+                <br />
+                <small class="text-success">
+                    @date
+                </small>
+            </h3>
+        </div>
+        <div class="card-body">
+            @if (Model.Count() != 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr class="bg-black">
+                                <th>Facility</th>
+                                <th>Name of User</th>
+                                <th>Level</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Login</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var timeLogin = item.UserLoginTime.ToString("hh:mm tt", System.Globalization.CultureInfo.InvariantCulture);
+                                <tr>
+                                    <td>@item.FacilityName</td>
+                                    <td>@item.UserFullName</td>
+                                    <td>@item.UserLevel</td>
+                                    <td>@item.UserDepartment</td>
+                                    <td>@item.UserStatus</td>
+                                    <td>@timeLogin</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            { 
+                <div class="alert alert-warning">
+                    <span class="">
+                        <i class="fa fa-warning"></i>
+                        &nbsp;No data found!
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,307 @@
+﻿@model PregnantReferViewModel
+@{
+    var patient = ViewBag.Patient;
+    var dateReferred = DateTime.Now.DayOfWeek + " " + DateTime.Now.ToString("MMMM d, yyyy");
+    var timeReferred = DateTime.Now.ToString("hh:mm tt", System.Globalization.CultureInfo.InvariantCulture);
+}
+
+
+<div class="title-form">BEmONC/ CEmONC REFERRAL FORM</div>
+<form asp-action="PregnantWalkin" method="post" id="pregnant-refer-form">
+    <input asp-for="PatientId" value="@patient.Id" hidden />
+    <div class="modal-body">
+        <div class="form-group-sm">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="5">REFERRAL RECORD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Who is Referring: </td>
+                        <td>
+                            Record Number:
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm" asp-for="RecordNumber" autocomplete="off">
+                        </td>
+                        <td>
+                            Referred Date:
+                            <span class="text-success">
+                                @dateReferred
+                            </span>
+                        </td>
+                        <td>
+                            Time:
+                            <span class="text-success">
+                                @timeReferred
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            Name: 
+                            <span class="text-success">
+                                Not  Specified
+                            </span>
+                        </td>
+                        <td>Arrival Date</td>
+                        <td>Time</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Facility:
+                        </td>
+                        <td colspan="4">
+                            <select class="form-control form-control-sm" asp-for="ReferredTo" asp-items="ViewBag.Facilities" id="facilityFilter" style="width:100%" required>
+                                <option value="">Select Facility...</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="ReferredTo"></span>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            Accompanied by the Health Worker:
+                        </td>
+                        <td colspan="3">
+                            <input type="text" class="form-control form-control-sm" asp-for="HealthWorker" placeholder="Name of Health Worker">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            Referred to:&nbsp;
+                            <span class="text-success">
+                                @ViewBag.Facility
+                            </span>
+                        </td>
+                        <td colspan="2">
+                            <div class="d-inline-flex">
+                                Department:&nbsp;
+                                <select class="form-control form-control-sm" asp-for="Department" asp-items="ViewBag.Departments" style="width:100%" required>
+                                    <option value="">Select Department...</option>
+                                </select>
+                                <span class="text-danger" asp-validation-for="Department"></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            Address:
+                            <span class="text-primary">@ViewBag.FacilityAddress</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-sm-6">
+                    <table class="table pregnant-bg-warning">
+                        <thead>
+                            <tr class="bg-gray-light">
+                                <th colspan="4">WOMAN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="3">
+                                    Name:
+                                    <span class="text-danger">
+                                        @patient.Name
+                                    </span>
+                                </td>
+                                <td>
+                                    Age:
+                                    <span class="text-danger">
+                                        @patient.Age
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Address:
+                                    <span class="text-danger">
+                                        @patient.Address
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Main Reason for Referral:
+                                    <label>
+                                        <input type="radio" asp-for="WomanMainReason" id="womannone" value="None" checked=""> None
+                                    </label>
+                                    <label>
+                                        <input type="radio" asp-for="WomanMainReason" id="womanemergency" value="Emergency"> Emergency
+                                    </label>
+                                    <label>
+                                        <input type="radio" asp-for="WomanMainReason" id="womannonemergency" value="Non-Emergency"> Non-Emergency
+                                    </label>
+                                    <label>
+                                        <input type="radio" asp-for="WomanMainReason" id="womanaccompany" value="To accompany the baby"> To accompany the baby
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Major Findings (Clinica and BP,Temp,Lab)
+                                    <br>
+                                    <textarea class="form-control" asp-for="WomanMajorFindings" style="resize: none;width: 100%" rows="5" required></textarea>
+                                    <span class="text-danger" asp-validation-for="WomanMajorFindings"></span>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-light">
+                                <td colspan="4">Treatments Give Time</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Before Referral:
+                                    <div class="row">
+                                        <div class="col-sm-6 col-cs">
+                                            <input type="text" class="form-control form-control-sm" asp-for="WomanBeforeTreatmentGiven" placeholder="Treatment Given">
+                                        </div>
+                                        <div class="col-sm-6 col-cs">
+                                            <input type="text" class="form-control form-control-sm" asp-for="WomanBeforeDateTimeGiven" placeholder="Date/Time Given">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    During Transport
+                                    <div class="row">
+                                        <div class="col-sm-6 col-cs">
+                                            <input type="text" class="form-control form-control-sm" asp-for="WomanDuringTreatmentGiven" placeholder="Treatment Given">
+                                        </div>
+                                        <div class="col-sm-6 col-cs">
+                                            <input type="text" class="form-control form-control-sm" asp-for="WomanDuringDateTimeGiven" placeholder="Date/Time Given">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Information Given to the Woman and Companion About the Reason for Referral
+                                    <br>
+                                    <textarea class="form-control" asp-for="WomanInformationGiven" style="resize: none;width: 100%" rows="5" required></textarea>
+                                    <span class="text-danger" asp-validation-for="WomanInformationGiven"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-sm-6">
+                    <table class="table pregnant-bg-warning">
+                        <thead>
+                            <tr class="bg-gray-light">
+                                <th colspan="4">BABY</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    Name :<br>
+                                    <input class="form-control form-control-sm" asp-for="BabyFirstName" placeholder="First Name" autocomplete="off"><br>
+                                    <input class="form-control form-control-sm" asp-for="BabyMiddleName" placeholder="Middle Name" autocomplete="off"><br>
+                                    <input class="form-control form-control-sm" asp-for="BabyLastName" placeholder="Last Name" autocomplete="off">
+                                </td>
+                                <td style="vertical-align: top !important;">
+                                    Date and Hour of Birth:
+                                    <br>
+                                    <input class="form-control form-control-sm" asp-for="BabyDateOfBirth" type="date" autocomplete="off"><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    Birth Weight:
+                                    <input class="form-control form-control-sm" asp-for="BabyBirthWeight" placeholder="kg or lbs" autocomplete="off"><br>
+                                </td>
+                                <td>
+                                    Gestational Age:
+                                    <input class="form-control form-control-sm" asp-for="GestationalAge" placeholder="age" autocomplete="off"><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Main Reason for Referral
+                                    <label>
+                                        <input type="radio" asp-for="BabyMainReason" value="None" id="none" checked autocomplete="off"> None
+                                    </label>
+                                    <label>
+                                        <input type="radio" asp-for="BabyMainReason" value="Emergency" id="emergency" autocomplete="off"> Emergency
+                                    </label>
+                                    <label>
+                                        <input type="radio" asp-for="BabyMainReason" value="Non-Emergency" id="nonemergency" autocomplete="off"> Non-Emergency
+                                    </label>
+                                    <label>
+                                        <input type="radio" asp-for="BabyMainReason" value="To accompany the mother" id="accompany" autocomplete="off"> To accompany the mother
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Major Findings (Clinica and BP,Temp,Lab)
+                                    <br>
+                                    <textarea class="form-control" asp-for="BabyMajorFindings" style="resize: none;width: 100%" rows="5"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Last (Breast) Feed (Time):
+                                    <input class="form-control form-control-sm" asp-for="BabyLastFeed" placeholder="Date/Time" autocomplete="off"><br>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-light">
+                                <td colspan="4">Treatments Give Time</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Before Referral:
+                                    <div class="row">
+                                        <div class="col-sm-6 col-cs">
+                                            <input class="form-control form-control-sm" asp-for="BabyBeforeTreatmentGiven" placeholder="Treatment Given" autocomplete="off">
+                                        </div>
+                                        <div class="col-sm-6 col-cs">
+                                            <input class="form-control form-control-sm" asp-for="BabyBeforeDateTimeGiven" placeholder="Date/Time Given" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    During Transport:
+                                    <div class="row">
+                                        <div class="col-sm-6 col-cs">
+                                            <input class="form-control form-control-sm" asp-for="BabyDuringTreatmentGiven" placeholder="Treatment Given" autocomplete="off">
+                                        </div>
+                                        <div class="col-sm-6 col-cs">
+                                            <input class="form-control form-control-sm" asp-for="BabyDuringDateTimeGiven" placeholder="Date/Time Given" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    Information Given to the Woman and Companion About the Reason for Referral
+                                    <br>
+                                    <textarea class="form-control" asp-for="BabyInformationGiven" style="resize: none;width: 100%" rows="5"></textarea>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>  
+        </div>
+    </div>
+    <div class="modal-footer justify-content-end">
+        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Back</button>
+        <button type="submit" class="btn btn-success"><i class="far fa-paper-plane"></i> Send</button>
+    </div>
+</form>
+
+<script>
+    var form = $('#pregnant-refer-form');
+    form.removeData('validator');
+    form.removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse(form);
+</script>
